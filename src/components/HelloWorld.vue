@@ -1,41 +1,58 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-
-defineProps<{ msg: string }>()
-
-const count = ref(0)
+<script lang="ts">
+import { defineComponent, ref, reactive, computed, watch } from "vue";
+interface Person {
+  name: string;
+  age: number;
+}
+export default defineComponent({
+  name: "HelloWorld",
+  setup() {
+    const count = ref<string | number>(0);
+    const user: Person = reactive({
+      name: "Abel",
+      age: 8,
+    });
+    const buttonStatus = computed(() => {
+      return {
+        text: user.age >= 10 ? "大于10" : "小于10",
+        disable: user.age < 10,
+      };
+    });
+    const increment = () => {
+      if (typeof count.value === "number") count.value++;
+      user.age++;
+    };
+    watch(count, (newValue, oldValue) => {
+      console.log(newValue, oldValue);
+      document.title = `count:${newValue}`;
+    });
+    watch(
+      () => user.age,
+      (newValue, oldValue) => {
+        console.log(newValue, oldValue);
+      }
+    );
+    const headline = ref<HTMLElement | null>();
+    return {
+      count,
+      increment,
+      user,
+      buttonStatus,
+      headline,
+    };
+  },
+});
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
+  <div>
+    <h1 ref="headline">{{ count }}</h1>
+    <h1>age:{{ user.age }}</h1>
+    <button @click="increment">按钮</button>
+    <button :disabled="buttonStatus.disable">
+      {{ buttonStatus.text }}
+    </button>
   </div>
-
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Learn more about IDE Support for Vue in the
-    <a
-      href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support"
-      target="_blank"
-      >Vue Docs Scaling up Guide</a
-    >.
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
+<style scoped></style>

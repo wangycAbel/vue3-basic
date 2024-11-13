@@ -1,9 +1,32 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import HelloWorld from "./components/HelloWorld.vue";
+import MyProfile from "./components/myProfile.vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import useMousePosition from "./hooks/useMousePosition";
+import useURLLoader from "./hooks/useURLLoader";
+export default defineComponent({
+  name: "App",
+  components: {
+    HelloWorld,
+    MyProfile,
+  },
+  setup() {
+    const {loading,result} = useURLLoader("https://dog.ceo/api/breeds/image/random");
+
+    const { x, y } = useMousePosition();
+    return {
+      x,
+      y,
+      loading,
+      result
+    };
+  },
+});
 </script>
 
 <template>
   <div>
+    <h1>x:{{ x }}y:{{ y }}</h1>
     <a href="https://vite.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
     </a>
@@ -12,6 +35,9 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <MyProfile name="Abel" :age="18" />
+  <h1 v-if="loading">loading</h1>
+  <img v-else :src="result"></img>
 </template>
 
 <style scoped>
